@@ -1,3 +1,7 @@
 source /usr/share/nvm/init-nvm.sh
 
+NIXPATH="$HOME/.nix-profile/bin"
+
+export PATH=$PATH:$NIXPATH
+
 eval "$(starship init zsh)"

@@ -13,10 +13,22 @@
 	"stow",
 	"zsh",
 	"shfmt",
-	"starship"
+	"starship",
+	"ttf-jetbrains-mono-nerd",
+	"signal-desktop",
+	"neovim",
+	"stylua",
+	"jellyfin-web",
+	"jellyfin-server",
+	"qbittorrent",
+	"sqlitebrowser",
+	"nix"
 	],
 	"yay": [
 		"extension-manager",
 		"aws-cli-v2"
+	],
+	"nix": [
+		"github:kamadorueda/alejandra/3.1.0"
 	]
 }

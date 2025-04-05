@@ -94,6 +94,8 @@ parse_and_install_from_config() {
 		item=$(echo "$i" | tr -d "'")
 		if [ "$1" == "yay" ]; then
 			install_yay_pkg "$item"
+		elif [ "$1" == "nix" ]; then
+			nix profile install "$item" --extra-experimental-features nix-command --extra-experimental-features flakes
 		else
 			install_pkg "$item"
 		fi
@@ -103,6 +105,8 @@ parse_and_install_from_config() {
 main() {
 	parse_and_install_from_config "extra"
 	parse_and_install_from_config "yay"
+
+	parse_and_install_from_config "nix"
 
 	# chsh zsh
 	change_shell_to_zsh
