@@ -1,11 +1,22 @@
 {
-    "extra": [
-        "code",
-        "jq",
-        "wezterm",
-        "jellyfin-web",
-        "pass",
-        "exa",
-        "firefox"
-    ]
+	"extra": [
+	"code",
+	"jq",
+	"wezterm",
+	"jellyfin-web",
+	"pass",
+	"exa",
+	"firefox",
+	"nvm",
+	"task",
+	"rustup",
+	"stow",
+	"zsh",
+	"shfmt",
+	"starship"
+	],
+	"yay": [
+		"extension-manager",
+		"aws-cli-v2"
+	]
 }

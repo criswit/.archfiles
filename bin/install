@@ -3,31 +3,112 @@
 dotfiles_dir=$(dirname "$(pwd)")/.archfiles
 
 query_info() {
-    pacman -Qi $1
+	pacman -Qi $1
 }
 
 install_pkg() {
-    pkg=$1
-    query_info "$item"
-    result=$?
-    if [ "$result" -eq 0 ]; then
-    echo "package exists, skipping"
-    else
-    echo "package $pkg is not installed"
-    sudo pacman -Sy --noconfirm "$pkg"
-    fi
+	pkg=$1
+	query_info "$item"
+	result=$?
+	if [ "$result" -eq 0 ]; then
+		echo "package exists, skipping"
+	else
+		echo "package $pkg is not installed"
+		sudo pacman -Sy --noconfirm "$pkg"
+	fi
 }
 
+install_yay() {
+	local tmp_dir
+	tmp_dir=$(mktemp -d /tmp/yay-install-XXXXX)
+
+	echo "Installing required dependencies..."
+	sudo pacman -S --needed --noconfirm git base-devel
+
+	echo "Cloning yay repository to $tmp_dir..."
+	git clone https://aur.archlinux.org/yay.git "$tmp_dir"
+
+	echo "Building and installing yay..."
+	cd "$tmp_dir" || {
+		echo "Failed to change directory"
+		return 1
+	}
+	makepkg -si --noconfirm
+
+	local exit_status=$?
+
+	echo "Cleaning up temporary files..."
+	cd - >/dev/null
+	rm -rf "$tmp_dir"
+
+	if [ $exit_status -eq 0 ]; then
+		echo "yay installed successfully"
+		return 0
+	else
+		echo "yay installation failed"
+		return 1
+	fi
+}
+
+install_yay_pkg() {
+	query_info "yay"
+	result=$?
+	if [ "$result" -eq 0 ]; then
+		echo "yay is already installed"
+	else
+		echo "yay is not installed, installing yay"
+		install_yay
+	fi
+	yay -S "$1" --noconfirm --needed --answerdiff=n --answerclean=n --answeredit=n --answerupgrade=a
+}
+
+change_shell_to_zsh() {
+	if [[ "$(echo $SHELL)" != *"/zsh"* ]]; then
+		echo "Current shell is not zsh. Changing to zsh..."
+
+		# Check if zsh is installed
+		if command -v zsh &>/dev/null; then
+			# Get path to zsh
+			zsh_path=$(which zsh)
+
+			# Check if zsh is in /etc/shells
+			if ! grep -q "$zsh_path" /etc/shells; then
+				echo "Adding zsh to /etc/shells"
+				echo "$zsh_path" | sudo tee -a /etc/shells
+			fi
+
+			# Change shell
+			chsh -s "$zsh_path"
+			echo "Shell changed to zsh. Please log out and log back in for changes to take effect."
+		else
+			echo "zsh is not installed. Please install it first."
+			exit 1
+		fi
+	else
+		echo "Shell is already zsh."
+	fi
+}
 
 parse_and_install_from_config() {
-    jq -r ".$1[] | @sh" "$dotfiles_dir/config.json" | while read -r i; do
-    item=$(echo "$i" | tr -d "'")
-    install_pkg "$item"
-    done
-    }
+	jq -r ".$1[] | @sh" "$dotfiles_dir/config.json" | while read -r i; do
+		item=$(echo "$i" | tr -d "'")
+		if [ "$1" == "yay" ]; then
+			install_yay_pkg "$item"
+		else
+			install_pkg "$item"
+		fi
+	done
+}
 
-    main() {
-        parse_and_install_from_config "extra"
-    }
+main() {
+	parse_and_install_from_config "extra"
+	parse_and_install_from_config "yay"
+
+	# chsh zsh
+	change_shell_to_zsh
+
+	# stow files
+	stow --dotfiles -v -t $HOME files
+}
 
 main "$@"
