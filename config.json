@@ -22,7 +22,8 @@
 	"jellyfin-server",
 	"qbittorrent",
 	"sqlitebrowser",
-	"nix"
+	"nix",
+	"chromium"
 	],
 	"yay": [
 		"extension-manager",

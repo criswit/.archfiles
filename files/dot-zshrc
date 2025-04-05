@@ -1,7 +1,15 @@
+# node version manager
 source /usr/share/nvm/init-nvm.sh
 
+# source bash aliases file
+source "$HOME/.aliases"
+
+# establish path variables
 NIXPATH="$HOME/.nix-profile/bin"
 
+
+# attach path variables to path env var
 export PATH=$PATH:$NIXPATH
 
+# launch shell with starship
 eval "$(starship init zsh)"
