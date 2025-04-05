@@ -1,0 +1,33 @@
+#!/bin/bash
+
+dotfiles_dir=$(dirname "$(pwd)")/.archfiles
+
+query_info() {
+    pacman -Qi $1
+}
+
+install_pkg() {
+    pkg=$1
+    query_info "$item"
+    result=$?
+    if [ "$result" -eq 0 ]; then
+    echo "package exists, skipping"
+    else
+    echo "package $pkg is not installed"
+    sudo pacman -Sy --noconfirm "$pkg"
+    fi
+}
+
+
+parse_and_install_from_config() {
+    jq -r ".$1[] | @sh" "$dotfiles_dir/config.json" | while read -r i; do
+    item=$(echo "$i" | tr -d "'")
+    install_pkg "$item"
+    done
+    }
+
+    main() {
+        parse_and_install_from_config "extra"
+    }
+
+main "$@"

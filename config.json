@@ -1,0 +1,11 @@
+{
+    "extra": [
+        "code",
+        "jq",
+        "wezterm",
+        "jellyfin-web",
+        "pass",
+        "exa",
+        "firefox"
+    ]
+}
