@@ -6,14 +6,14 @@ MEDIA_DIR="/media/jellyfin"
 JELLYFIN_USER="jellyfin"
 JELLYFIN_GROUP="jellyfin"
 JELLYFIN_CONFIG_DIR="/etc/jellyfin"
-CONTENT_TYPE="mixed"  # Options: movies, tvshows, music, books, photos, homevideos, mixed
+CONTENT_TYPE="mixed" # Options: movies, tvshows, music, books, photos, homevideos, mixed
 
 echo "Setting up Jellyfin media library automatically..."
 
 # Ensure media directory exists with proper permissions
 if [ ! -d "$MEDIA_DIR" ]; then
-    echo "Creating media directory..."
-    sudo mkdir -p "$MEDIA_DIR"
+	echo "Creating media directory..."
+	sudo mkdir -p "$MEDIA_DIR"
 fi
 
 echo "Setting permissions..."
@@ -30,7 +30,7 @@ sudo mkdir -p "$JELLYFIN_CONFIG_DIR"
 LIBRARY_ID=$(cat /proc/sys/kernel/random/uuid)
 
 # Create or update library configuration
-sudo tee "$JELLYFIN_CONFIG_DIR/library.xml" > /dev/null << EOF
+sudo tee "$JELLYFIN_CONFIG_DIR/library.xml" >/dev/null <<EOF
 <?xml version="1.0" encoding="utf-8"?>
 <ServerConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Libraries>

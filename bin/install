@@ -108,6 +108,13 @@ main() {
 
 	parse_and_install_from_config "nix"
 
+	# set wallpaper
+	# gsettings set org.gnome.desktop.background picture-uri file:///home/christopher/.archfiles/media/mister_squiggly.png
+
+	# run gnome setup
+
+	. "$HOME/.archfiles/bin/gnome_setup.sh"
+
 	# chsh zsh
 	change_shell_to_zsh
 

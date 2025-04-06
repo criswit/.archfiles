@@ -5,21 +5,21 @@ echo "Fixing Jellyfin web client issue..."
 
 # Option 1: Install the missing web client package if available in repositories
 if pacman -Ss jellyfin-web &>/dev/null; then
-    echo "Installing jellyfin-web package..."
-    sudo pacman -S jellyfin-web --noconfirm
+	echo "Installing jellyfin-web package..."
+	sudo pacman -S jellyfin-web --noconfirm
 elif yay -Ss jellyfin-web &>/dev/null; then
-    echo "Installing jellyfin-web package from AUR..."
-    yay -S jellyfin-web --noconfirm --answerdiff=n --answerclean=n --answeredit=n
+	echo "Installing jellyfin-web package from AUR..."
+	yay -S jellyfin-web --noconfirm --answerdiff=n --answerclean=n --answeredit=n
 else
-    # Option 2: Modify service to run without web client
-    echo "Web client package not found. Modifying service to run without web client..."
-    sudo sed -i 's|ExecStart=/usr/bin/jellyfin --datadir /var/lib/jellyfin --logdir /var/log/jellyfin|ExecStart=/usr/bin/jellyfin --datadir /var/lib/jellyfin --logdir /var/log/jellyfin --nowebclient|' /etc/systemd/system/jellyfin.service
+	# Option 2: Modify service to run without web client
+	echo "Web client package not found. Modifying service to run without web client..."
+	sudo sed -i 's|ExecStart=/usr/bin/jellyfin --datadir /var/lib/jellyfin --logdir /var/log/jellyfin|ExecStart=/usr/bin/jellyfin --datadir /var/lib/jellyfin --logdir /var/log/jellyfin --nowebclient|' /etc/systemd/system/jellyfin.service
 fi
 
 # Create a basic configuration file if it doesn't exist
 if [ ! -f "/etc/jellyfin/system.xml" ]; then
-    echo "Creating basic configuration..."
-    cat << 'EOF' | sudo tee /etc/jellyfin/system.xml > /dev/null
+	echo "Creating basic configuration..."
+	cat <<'EOF' | sudo tee /etc/jellyfin/system.xml >/dev/null
 <?xml version="1.0" encoding="utf-8"?>
 <ServerConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <HostWebClient>false</HostWebClient>
@@ -31,7 +31,7 @@ if [ ! -f "/etc/jellyfin/system.xml" ]; then
   <IsStartupWizardCompleted>false</IsStartupWizardCompleted>
 </ServerConfiguration>
 EOF
-    sudo chown jellyfin:jellyfin /etc/jellyfin/system.xml
+	sudo chown jellyfin:jellyfin /etc/jellyfin/system.xml
 fi
 
 echo "Reloading systemd and restarting Jellyfin..."
