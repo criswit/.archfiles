@@ -1,53 +1,65 @@
 {
-	"extra": [
-		"code",
-		"jq",
-		"wezterm",
-		"jellyfin-web",
-		"pass",
-		"exa",
-		"firefox",
-		"nvm",
-		"task",
-		"rustup",
-		"stow",
-		"zsh",
-		"shfmt",
-		"starship",
-		"ttf-jetbrains-mono-nerd",
-		"signal-desktop",
-		"neovim",
-		"stylua",
-		"jellyfin-web",
-		"jellyfin-server",
-		"qbittorrent",
-		"sqlitebrowser",
-		"nix",
-		"chromium",
-		"wmctrl"
-	],
-	"yay": [
-		"extension-manager",
-		"aws-cli-v2"
-	],
-	"nix": [
-		"github:kamadorueda/alejandra/3.1.0"
-	],
-	"keybindings": [
-		{
-			"name": "Ulauncher",
-			"command": "ulauncher-toggle",
-			"binding": "<Super>space"
-		},
-		{
-			"name": "Ulauncher",
-			"command": "ulauncher-toggle",
-			"binding": "<Alt>space"
-		},
-		{
-			"name": "WezTerm",
-			"command": "wezterm",
-			"binding": "<Alt>i"
-		}
-	]
+    "extra": [
+        "code",
+        "jq",
+        "wezterm",
+        "jellyfin-web",
+        "pass",
+        "exa",
+        "firefox",
+        "nvm",
+        "task",
+        "rustup",
+        "stow",
+        "zsh",
+        "shfmt",
+        "starship",
+        "ttf-jetbrains-mono-nerd",
+        "signal-desktop",
+        "neovim",
+        "stylua",
+        "jellyfin-web",
+        "jellyfin-server",
+        "qbittorrent",
+        "sqlitebrowser",
+        "nix",
+        "chromium",
+        "wmctrl",
+        "xtrlock",
+        "wl-clipboard"
+    ],
+    "yay": [
+        "extension-manager",
+        "aws-cli-v2",
+        "ulauncher"
+    ],
+    "nix": [
+        "github:kamadorueda/alejandra/3.1.0"
+    ],
+    "keybindings": [
+        {
+            "name": "Ulauncher",
+            "command": "ulauncher-toggle",
+            "binding": "<Super>space"
+        },
+        {
+            "name": "Ulauncher",
+            "command": "ulauncher-toggle",
+            "binding": "<Alt>space"
+        },
+        {
+            "name": "WezTerm",
+            "command": "wezterm",
+            "binding": "<Alt>i"
+        },
+        {
+            "name": "Lock keyboar",
+            "command": "xtrlock",
+            "binding": "<Super>l"
+        }
+    ],
+    "cargo": [
+        "cargo-update",
+        "csvlens"
+    ]
 }

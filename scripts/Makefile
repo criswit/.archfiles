@@ -32,3 +32,7 @@ add-aws-sso-profile:
 		echo "output = $(AWS_OUTPUT)" >> $(AWS_CONFIG_FILE); \
 		echo "AWS SSO profile $(AWS_PROFILE_NAME) added successfully"; \
 	fi
+
+
+create-ssh-key:
+	ssh-keygen -t ed25519 -C "christopher@kali"

@@ -96,6 +96,8 @@ parse_and_install_from_config() {
 			install_yay_pkg "$item"
 		elif [ "$1" == "nix" ]; then
 			nix profile install "$item" --extra-experimental-features nix-command --extra-experimental-features flakes
+		elif [ "$1" == "cargo" ]; then
+			yes | cargo install "$item" --quiet
 		else
 			install_pkg "$item"
 		fi
@@ -106,14 +108,36 @@ main() {
 	parse_and_install_from_config "extra"
 	parse_and_install_from_config "yay"
 
+	# run post-install script
+
+	. "$HOME/.archfiles/bin/post_pkg_install.sh"
+
+	# install rust crates
+	parse_and_install_from_config "cargo"
+
+	if [ "$(stat -c '%U:%G' /nix)" != "$USER:$USER" ]; then
+		echo "User $USER is not the owner of /nix. Changing ownership..."
+		sudo chown -R "$USER:$USER" /nix
+	else
+		echo "User $USER is already the owner of /nix. Skipping."
+	fi
 	parse_and_install_from_config "nix"
 
-	# set wallpaper
-	# gsettings set org.gnome.desktop.background picture-uri file:///home/christopher/.archfiles/media/mister_squiggly.png
-
 	# run gnome setup
-
 	. "$HOME/.archfiles/bin/gnome_setup.sh"
+
+
+	# clone nvim
+	if [ ! -d "$HOME/.config/nvim" ]; then
+		echo "Nvim configuration directory not found. Cloning repository..."
+		git clone git@github.com:criswit/nvim.git "$HOME/.config/nvim"
+	else
+		echo "Nvim configuration directory already exists. Skipping clone."
+	fi
+
+	# setup jellyfin
+
+	. "$HOME/.archfiles/bin/jellyfin/sh"
 
 	# chsh zsh
 	change_shell_to_zsh
