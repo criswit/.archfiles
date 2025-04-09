@@ -3,147 +3,151 @@
 dotfiles_dir=$(dirname "$(pwd)")/.archfiles
 
 query_info() {
-	pacman -Qi $1
+    pacman -Qi $1
 }
 
 install_pkg() {
-	pkg=$1
-	query_info "$item"
-	result=$?
-	if [ "$result" -eq 0 ]; then
-		echo "package exists, skipping"
-	else
-		echo "package $pkg is not installed"
-		sudo pacman -Sy --noconfirm "$pkg"
-	fi
+    pkg=$1
+    query_info "$item"
+    result=$?
+    if [ "$result" -eq 0 ]; then
+        echo "package exists, skipping"
+    else
+        echo "package $pkg is not installed"
+        sudo pacman -Sy --noconfirm "$pkg"
+    fi
 }
 
 install_yay() {
-	local tmp_dir
-	tmp_dir=$(mktemp -d /tmp/yay-install-XXXXX)
+    local tmp_dir
+    tmp_dir=$(mktemp -d /tmp/yay-install-XXXXX)
 
-	echo "Installing required dependencies..."
-	sudo pacman -S --needed --noconfirm git base-devel
+    echo "Installing required dependencies..."
+    sudo pacman -S --needed --noconfirm git base-devel
 
-	echo "Cloning yay repository to $tmp_dir..."
-	git clone https://aur.archlinux.org/yay.git "$tmp_dir"
+    echo "Cloning yay repository to $tmp_dir..."
+    git clone https://aur.archlinux.org/yay.git "$tmp_dir"
 
-	echo "Building and installing yay..."
-	cd "$tmp_dir" || {
-		echo "Failed to change directory"
-		return 1
-	}
-	makepkg -si --noconfirm
+    echo "Building and installing yay..."
+    cd "$tmp_dir" || {
+        echo "Failed to change directory"
+        return 1
+    }
+    makepkg -si --noconfirm
 
-	local exit_status=$?
+    local exit_status=$?
 
-	echo "Cleaning up temporary files..."
-	cd - >/dev/null
-	rm -rf "$tmp_dir"
+    echo "Cleaning up temporary files..."
+    cd - >/dev/null
+    rm -rf "$tmp_dir"
 
-	if [ $exit_status -eq 0 ]; then
-		echo "yay installed successfully"
-		return 0
-	else
-		echo "yay installation failed"
-		return 1
-	fi
+    if [ $exit_status -eq 0 ]; then
+        echo "yay installed successfully"
+        return 0
+    else
+        echo "yay installation failed"
+        return 1
+    fi
 }
 
 install_yay_pkg() {
-	query_info "yay"
-	result=$?
-	if [ "$result" -eq 0 ]; then
-		echo "yay is already installed"
-	else
-		echo "yay is not installed, installing yay"
-		install_yay
-	fi
-	yay -S "$1" --noconfirm --needed --answerdiff=n --answerclean=n --answeredit=n --answerupgrade=a
+    query_info "yay"
+    result=$?
+    if [ "$result" -eq 0 ]; then
+        echo "yay is already installed"
+    else
+        echo "yay is not installed, installing yay"
+        install_yay
+    fi
+    yay -S "$1" --noconfirm --needed --answerdiff=n --answerclean=n --answeredit=n --answerupgrade=a
 }
 
 change_shell_to_zsh() {
-	if [[ "$(echo $SHELL)" != *"/zsh"* ]]; then
-		echo "Current shell is not zsh. Changing to zsh..."
+    if [[ "$(echo $SHELL)" != *"/zsh"* ]]; then
+        echo "Current shell is not zsh. Changing to zsh..."
 
-		# Check if zsh is installed
-		if command -v zsh &>/dev/null; then
-			# Get path to zsh
-			zsh_path=$(which zsh)
+        # Check if zsh is installed
+        if command -v zsh &>/dev/null; then
+            # Get path to zsh
+            zsh_path=$(which zsh)
 
-			# Check if zsh is in /etc/shells
-			if ! grep -q "$zsh_path" /etc/shells; then
-				echo "Adding zsh to /etc/shells"
-				echo "$zsh_path" | sudo tee -a /etc/shells
-			fi
+            # Check if zsh is in /etc/shells
+            if ! grep -q "$zsh_path" /etc/shells; then
+                echo "Adding zsh to /etc/shells"
+                echo "$zsh_path" | sudo tee -a /etc/shells
+            fi
 
-			# Change shell
-			chsh -s "$zsh_path"
-			echo "Shell changed to zsh. Please log out and log back in for changes to take effect."
-		else
-			echo "zsh is not installed. Please install it first."
-			exit 1
-		fi
-	else
-		echo "Shell is already zsh."
-	fi
+            # Change shell
+            chsh -s "$zsh_path"
+            echo "Shell changed to zsh. Please log out and log back in for changes to take effect."
+        else
+            echo "zsh is not installed. Please install it first."
+            exit 1
+        fi
+    else
+        echo "Shell is already zsh."
+    fi
 }
 
 parse_and_install_from_config() {
-	jq -r ".$1[] | @sh" "$dotfiles_dir/config.json" | while read -r i; do
-		item=$(echo "$i" | tr -d "'")
-		if [ "$1" == "yay" ]; then
-			install_yay_pkg "$item"
-		elif [ "$1" == "nix" ]; then
-			nix profile install "$item" --extra-experimental-features nix-command --extra-experimental-features flakes
-		elif [ "$1" == "cargo" ]; then
-			yes | cargo install "$item" --quiet
-		else
-			install_pkg "$item"
-		fi
-	done
+    jq -r ".$1[] | @sh" "$dotfiles_dir/config.json" | while read -r i; do
+        item=$(echo "$i" | tr -d "'")
+        if [ "$1" == "yay" ]; then
+            install_yay_pkg "$item"
+        elif [ "$1" == "nix" ]; then
+            nix profile install "$item" --extra-experimental-features nix-command --extra-experimental-features flakes
+        elif [ "$1" == "cargo" ]; then
+            yes | cargo install "$item" --quiet
+        elif [ "$1" == "code" ]; then
+            code --install-extension "$item"
+        else
+            install_pkg "$item"
+        fi
+    done
 }
 
 main() {
-	parse_and_install_from_config "extra"
-	parse_and_install_from_config "yay"
+    parse_and_install_from_config "extra"
+    parse_and_install_from_config "yay"
 
-	# run post-install script
+    # run post-install script
 
-	. "$HOME/.archfiles/bin/post_pkg_install.sh"
+    . "$HOME/.archfiles/bin/post_pkg_install.sh"
 
-	# install rust crates
-	parse_and_install_from_config "cargo"
+    # install vscode extensions
+    parse_and_install_from_config "code"
 
-	if [ "$(stat -c '%U:%G' /nix)" != "$USER:$USER" ]; then
-		echo "User $USER is not the owner of /nix. Changing ownership..."
-		sudo chown -R "$USER:$USER" /nix
-	else
-		echo "User $USER is already the owner of /nix. Skipping."
-	fi
-	parse_and_install_from_config "nix"
+    # install rust crates
+    parse_and_install_from_config "cargo"
 
-	# run gnome setup
-	. "$HOME/.archfiles/bin/gnome_setup.sh"
+    if [ "$(stat -c '%U:%G' /nix)" != "$USER:$USER" ]; then
+        echo "User $USER is not the owner of /nix. Changing ownership..."
+        sudo chown -R "$USER:$USER" /nix
+    else
+        echo "User $USER is already the owner of /nix. Skipping."
+    fi
+    parse_and_install_from_config "nix"
 
+    # run gnome setup
+    . "$HOME/.archfiles/bin/gnome_setup.sh"
 
-	# clone nvim
-	if [ ! -d "$HOME/.config/nvim" ]; then
-		echo "Nvim configuration directory not found. Cloning repository..."
-		git clone git@github.com:criswit/nvim.git "$HOME/.config/nvim"
-	else
-		echo "Nvim configuration directory already exists. Skipping clone."
-	fi
+    # clone nvim
+    if [ ! -d "$HOME/.config/nvim" ]; then
+        echo "Nvim configuration directory not found. Cloning repository..."
+        git clone git@github.com:criswit/nvim.git "$HOME/.config/nvim"
+    else
+        echo "Nvim configuration directory already exists. Skipping clone."
+    fi
 
-	# setup jellyfin
+    # setup jellyfin
 
-	. "$HOME/.archfiles/bin/jellyfin/sh"
+    . "$HOME/.archfiles/bin/jellyfin/sh"
 
-	# chsh zsh
-	change_shell_to_zsh
+    # chsh zsh
+    change_shell_to_zsh
 
-	# stow files
-	stow --dotfiles -v -t $HOME files
+    # stow files
+    stow --dotfiles -v -t $HOME files
 }
 
 main "$@"

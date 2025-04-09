@@ -6,10 +6,15 @@ source "$HOME/.aliases"
 
 # establish path variables
 NIXPATH="$HOME/.nix-profile/bin"
+NPM_GLOBAL_PATH="$(npm get prefix -g)/bin"
+
+
+# other vars
+export ANTHROPIC_API_KEY="$(pass anthropic/apikey/devo)"
 
 
 # attach path variables to path env var
-export PATH=$PATH:$NIXPATH
+export PATH=$PATH:$NIXPATH:$NPM_GLOBAL_PATH
 
 # launch shell with starship
 eval "$(starship init zsh)"

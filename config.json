@@ -26,12 +26,18 @@
         "chromium",
         "wmctrl",
         "xtrlock",
-        "wl-clipboard"
+        "wl-clipboard",
+        "openvpn",
+        "openresolv",
+        "xclip",
+        "taskwarrior-tui"
     ],
     "yay": [
         "extension-manager",
         "aws-cli-v2",
-        "ulauncher"
+        "ulauncher",
+        "jackett",
+        "intellij-idea-ultimate-edition"
     ],
     "nix": [
         "github:kamadorueda/alejandra/3.1.0"
@@ -53,7 +59,7 @@
             "binding": "<Alt>i"
         },
         {
-            "name": "Lock keyboar",
+            "name": "Lock keyboard",
             "command": "xtrlock",
             "binding": "<Super>l"
         }
@@ -61,5 +67,9 @@
     "cargo": [
         "cargo-update",
         "csvlens"
+    ],
+    "code": [
+        "vscodevim.vim",
+        "saoudrizwan.claude-dev"
     ]
 }

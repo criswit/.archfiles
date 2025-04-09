@@ -7,6 +7,10 @@ dotfiles_dir=$(dirname "$(pwd)")/.archfiles
 ## default applications ##
 gsettings set org.gnome.desktop.default-applications.terminal exec '/usr/bin/wezterm start --always-new-process'
 
+# browser
+xdg-settings get default-web-browser
+xdg-settings set default-web-browser firefox.desktop
+
 ## wallpaper ##
 
 #gsettings set org.gnome.desktop.background picture-uri file:///"$HOME"/.archfiles/media/mister_squiggly.png
